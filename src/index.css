@@ -4,11 +4,6 @@
     right: 1%;
 }
 
-.list {
-    display: flex;
-    flex-direction: column;
-}
-
 .background {
     background-color: gray;
 }
