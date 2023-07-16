@@ -67,12 +67,11 @@ const Beers = () => {
         className={`${deleteList.length > 0 ? 'button' : 'show'}`}
       >Delete</button>
       <h1>Beers</h1>
-      <ul className='list'>
+      <ul>
         {list.map(item => {
-          const id = Math.random().toString();
           return (
             <li
-              key={id}
+              key={Math.random().toString()}
               onMouseDown={(e) => OnMouseDown(e, item.id, item.show ? false : true, item.background ? false : true, list)}
               className={`${item.background === true ? 'background' : ''}`}
             >
