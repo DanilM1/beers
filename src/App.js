@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { create } from 'zustand';
 
 const useStore = create((set) => ({
@@ -10,7 +8,7 @@ const useStore = create((set) => ({
   size: 0,
   deleteList: [],
 
-  Fetch: async (page, n, size, deleteListSize) => {
+  Fetch: async (page, n, size, deleteListSize = 0) => {
     if (size - deleteListSize < n + 15) {
       const response = await fetch(`https://api.punkapi.com/v2/beers?page=${page}`);
       set({ beers: await response.json().then(item => item.map(item => ({ ...item, show: false, background: false }))), page: page + 1 });
@@ -29,10 +27,9 @@ const useStore = create((set) => ({
     set((state) => ({
       list: state.beers.slice(n, n + 15),
       n: n + 5,
-      size: state.beers.length
+      size: state.beers.length,
+      deleteList: []
     }));
-
-    if (deleteListSize) { set({ deleteList: [] }); }
   },
 
   ShowBeer: (id, show, list) => {
@@ -46,19 +43,17 @@ const useStore = create((set) => ({
       list: list,
       deleteList: background ? [...state.deleteList, id] : state.deleteList.filter(item => item !== id)
     }));
+  },
+
+  ResetBackgroundBeer: () => {
+    set((state) => ({
+      list: state.list.map(item => ({ ...item, background: false }))
+    }));
   }
 }));
 
 const Beers = () => {
-  const { page, list, n, size, deleteList, Fetch, ShowBeer, BackgroundBeer } = useStore();
-
-  useEffect(() => {
-    Fetch(page, n, size);
-  }, []);
-
-  const OnFetch = (back, checkDeleteList) => {
-    Fetch(page, n - back, size, checkDeleteList ? deleteList.length : 0);
-  }
+  const { page, list, n, size, deleteList, Fetch, ShowBeer, BackgroundBeer, ResetBackgroundBeer } = useStore();
 
   const OnMouseDown = (e, id, show, background, list) => {
     if (e.button === 0) ShowBeer(id, show, list)
@@ -68,7 +63,7 @@ const Beers = () => {
   return (
     <>
       <button
-        onClick={() => OnFetch(5, true)}
+        onClick={() => Fetch(page, n - 5, size, deleteList.length)}
         className={`${deleteList.length > 0 ? 'button' : 'show'}`}
       >Delete</button>
       <h1>Beers</h1>
@@ -88,7 +83,7 @@ const Beers = () => {
           );
         })}
       </ul>
-      <p onClick={() => OnFetch(0, false)} className='arm'>Click to continue</p>
+      <p onClick={() => { Fetch(page, n, size); ResetBackgroundBeer() }} className='arm'>Click to continue</p>
     </>
   )
 }
