@@ -1,0 +1,26 @@
+.button {
+    position: fixed;
+    top: 1%;
+    right: 1%;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.background {
+    background-color: gray;
+}
+
+.arm {
+    cursor: pointer;
+}
+
+.show {
+    display: none;
+}
+
+.name:hover, .arm:hover {
+    color: red;
+}
